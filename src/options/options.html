@@ -3,19 +3,19 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>PLaMo 翻訳の設定</title>
+  <title>Translater の設定</title>
   <link rel="stylesheet" href="options.css">
 </head>
 <body>
   <main>
-    <h1>PLaMo 翻訳の設定</h1>
+    <h1>Translater の設定</h1>
     <form id="form">
       <section>
         <h2>翻訳に使う LLM</h2>
         <label>
           <span>API の URL</span>
           <input name="baseUrl" type="url" required placeholder="http://localhost:8080/v1">
-          <small>PLaMo 翻訳モデルを配信している OpenAI 互換の API（llama.cpp など）の URL。<code>/chat/completions</code> の手前まで書きます。</small>
+          <small>翻訳モデルを配信している OpenAI 互換の API（vLLM、llama.cpp など）の URL。<code>/chat/completions</code> の手前まで書きます。</small>
         </label>
         <label>
           <span>API キー</span>
@@ -28,7 +28,7 @@
             <button type="button" id="fetch-models">モデル一覧を取得</button>
           </span>
           <datalist id="models"></datalist>
-          <small>空のときはリクエストに <code>model</code> を含めません（llama.cpp は読み込み済みのモデルを使います）。</small>
+          <small>空のときはリクエストに <code>model</code> を含めません（vLLM や llama.cpp は読み込み済みのモデルを使います）。</small>
         </label>
       </section>
       <section>

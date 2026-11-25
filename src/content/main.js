@@ -1,10 +1,10 @@
 (() => {
   // A second injection (from the background after an extension reload) must not double the listeners.
-  if (globalThis.__plamoTranslatorStarted) return;
-  globalThis.__plamoTranslatorStarted = true;
+  if (globalThis.__translaterStarted) return;
+  globalThis.__translaterStarted = true;
 
-  const { createPageTranslator, createStatusView } = globalThis.PlamoPageTranslator;
-  const { createSelectionPopup } = globalThis.PlamoSelectionPopup;
+  const { createPageTranslator, createStatusView } = globalThis.TranslaterPageTranslator;
+  const { createSelectionPopup } = globalThis.TranslaterSelectionPopup;
 
   const TOKENS = `
     :host {
@@ -27,7 +27,7 @@
     [hidden] { display: none !important; }
   `;
 
-  const host = document.createElement('plamo-translator-ui');
+  const host = document.createElement('translater-ui');
   const shadow = host.attachShadow({ mode: 'open' });
   const tokens = document.createElement('style');
   tokens.textContent = TOKENS;

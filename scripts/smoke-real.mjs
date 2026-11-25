@@ -9,14 +9,14 @@ import { chromium } from 'playwright';
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = path.join(ROOT, 'tests/e2e/out');
 const LLM_BASE_URL = process.env.LLM_BASE_URL ?? 'http://100.64.114.83:8891/v1';
-const LLM_MODEL = process.env.LLM_MODEL ?? 'plamo-3-translate-0.8b';
+const LLM_MODEL = process.env.LLM_MODEL ?? 'hy-mt3';
 const URLS = process.argv.slice(2).length
   ? process.argv.slice(2)
   : ['https://en.wikipedia.org/wiki/River', 'https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver'];
 const TIMEOUT = 120_000;
 
 fs.mkdirSync(OUT, { recursive: true });
-const userDataDir = fs.mkdtempSync(path.join(os.tmpdir(), 'plamo-smoke-'));
+const userDataDir = fs.mkdtempSync(path.join(os.tmpdir(), 'translater-smoke-'));
 const context = await chromium.launchPersistentContext(userDataDir, {
   channel: 'chromium',
   headless: !process.env.HEADED,
@@ -54,7 +54,7 @@ try {
     page.on('pageerror', (e) => errors.push(e.message));
     await page.goto(url, { waitUntil: 'load', timeout: TIMEOUT });
     const original = await firstParagraph(page);
-    const label = page.locator('plamo-translator-ui .status .label');
+    const label = page.locator('translater-ui .status .label');
     const toggle = () =>
       worker.evaluate(async (u) => {
         const [tab] = await chrome.tabs.query({ url: u });

@@ -1,6 +1,6 @@
-# PLaMo Translator (Chrome extension)
+# Translater (Chrome extension)
 
-A Chrome extension that translates web pages in place with a PLaMo translation model (such as `plamo-3-translate`) served through an OpenAI-compatible API, for example by llama.cpp.
+A Chrome extension that translates web pages in place with a translation model (such as [Hy-MT3](https://huggingface.co/alpha-x-ai/Hy-MT3-30B-A3B-NVFP4)) served through an OpenAI-compatible API, for example by vLLM or llama.cpp.
 
 - **Page translation.** Replaces the text of the current page with its translation. Links and bold text stay in place, and one click restores the original.
 - **Selection translation.** Select some text and a small button with the extension's icon appears. Click it to open a card with the translation below the selection.
@@ -14,7 +14,7 @@ No build step is needed.
 1. Clone or download this repository.
 2. Open `chrome://extensions` in Chrome and turn on **Developer mode** (top right).
 3. Click **Load unpacked** and select this repository's folder (the one containing `manifest.json`).
-4. Pin **PLaMo 翻訳** from the puzzle icon in the toolbar for quick access.
+4. Pin **Translater** from the puzzle icon in the toolbar for quick access.
 
 Tabs that were already open before installing also work from the popup, the context menu, and the keyboard shortcuts. The extension injects itself into the tab at that moment.
 
@@ -26,12 +26,12 @@ Click the toolbar icon and choose **設定を開く** (Open settings), or open *
 | --- | --- |
 | API URL | Everything before `/chat/completions`, e.g. `http://localhost:8080/v1` |
 | API key | Sent as `Authorization: Bearer` when not empty |
-| Model | Omitted from requests when empty. **モデル一覧を取得** (Fetch models) lists the models from `GET /models` |
+| Model | Omitted from requests when empty. **モデル一覧を取得** (Fetch models) lists the models from `GET /models` and fills in the first one when the field is empty |
 | Target language | Japanese by default |
 | Concurrent requests | Maximum number of requests page translation sends at once (1 to 16, default 4) |
 | Show translate button | When off, selecting text shows no button. The context menu and the shortcut still work |
 
-Each request sends only the text to translate as the user message, and passes the target language as `chat_template_kwargs: { target_lang }` to the PLaMo chat template.
+Each request sends one user message: the default translation prompt from the Hy-MT3 model card, with the target language written as its English name, followed by the text to translate (`Translate the following text into Japanese. Note that you should only output the translated result without any additional explanation:` and a blank line).
 
 When you have filled in the form, click **接続テスト** (Test connection) to translate a short English sentence, then click **保存** (Save).
 
@@ -86,7 +86,7 @@ LLM_BASE_URL=http://localhost:8080/v1 npm run e2e
 npm run smoke -- https://example.com/article
 ```
 
-`LLM_BASE_URL` also sets the LLM URL for `npm run measure-tags` and `npm run smoke`. `LLM_MODEL` sets the model name for `npm run smoke` (default `plamo-3-translate-0.8b`).
+`LLM_BASE_URL` also sets the LLM URL for `npm run measure-tags` and `npm run smoke`. `LLM_MODEL` sets the model name for `npm run smoke` (default `hy-mt3`).
 
 The icon source is `icons/icon.svg`. `npm run icons` renders it into the PNG sizes `manifest.json` uses, with Playwright's Chromium. The selection button draws the same SVG from a copy in `src/content/selection-popup.js`, so update both when the icon changes.
 

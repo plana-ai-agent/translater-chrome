@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import '../../src/content/markup.js';
 
-const { serialize, parse, build, isInline } = globalThis.PlamoMarkup;
+const { serialize, parse, build, isInline } = globalThis.TranslaterMarkup;
 
 class FakeText {
   constructor(value) {

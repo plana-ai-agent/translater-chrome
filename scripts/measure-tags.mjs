@@ -3,7 +3,7 @@
 import '../src/content/markup.js';
 import { translate } from '../src/llm.js';
 
-const { serialize, parse } = globalThis.PlamoMarkup;
+const { serialize, parse } = globalThis.TranslaterMarkup;
 const BASE_URL = process.env.LLM_BASE_URL ?? 'http://100.64.114.83:8891/v1';
 
 // A nested array is one inline element around its contents.

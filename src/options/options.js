@@ -46,7 +46,7 @@ document.getElementById('fetch-models').addEventListener('click', async () => {
   try {
     const models = await listModels(readForm());
     document.getElementById('models').replaceChildren(...models.map((id) => new Option(id, id)));
-    if (models.length === 1 && !fields.model.value) fields.model.value = models[0];
+    if (models.length && !fields.model.value) fields.model.value = models[0];
     show(models.length ? `${models.length} 件: ${models.join(', ')}` : 'モデルが見つかりませんでした。', 'ok');
   } catch (e) {
     show(`取得できませんでした。\n${e.message}`, 'error');

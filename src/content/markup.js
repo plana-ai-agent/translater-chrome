@@ -129,5 +129,5 @@
     });
   }
 
-  globalThis.PlamoMarkup = { serialize, parse, build, isInline };
+  globalThis.TranslaterMarkup = { serialize, parse, build, isInline };
 })();

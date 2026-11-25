@@ -1,5 +1,5 @@
 (() => {
-  const { serialize, parse, build, isInline } = globalThis.PlamoMarkup;
+  const { serialize, parse, build, isInline } = globalThis.TranslaterMarkup;
 
   const SKIP_TAGS = new Set([
     'script', 'style', 'noscript', 'textarea', 'pre', 'svg', 'math', 'template', 'iframe',
@@ -325,5 +325,5 @@
     };
   }
 
-  globalThis.PlamoPageTranslator = { createPageTranslator, createStatusView };
+  globalThis.TranslaterPageTranslator = { createPageTranslator, createStatusView };
 })();

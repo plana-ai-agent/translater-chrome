@@ -220,5 +220,5 @@
     };
   }
 
-  globalThis.PlamoSelectionPopup = { createSelectionPopup };
+  globalThis.TranslaterSelectionPopup = { createSelectionPopup };
 })();

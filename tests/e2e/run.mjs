@@ -26,7 +26,7 @@ const ORIGIN = `http://127.0.0.1:${server.address().port}`;
 const PAGE_URL = `${ORIGIN}/page`;
 
 fs.mkdirSync(OUT, { recursive: true });
-const userDataDir = fs.mkdtempSync(path.join(os.tmpdir(), 'plamo-e2e-'));
+const userDataDir = fs.mkdtempSync(path.join(os.tmpdir(), 'translater-e2e-'));
 const context = await chromium.launchPersistentContext(userDataDir, {
   channel: 'chromium',
   headless: !process.env.HEADED,
@@ -49,7 +49,7 @@ async function check(name, fn) {
 
 const textOf = (page, selector) => page.locator(selector).evaluate((el) => el.textContent.replace(/\s+/g, ' ').trim());
 const waitTranslated = (page) =>
-  page.locator('plamo-translator-ui .status .label', { hasText: /^翻訳済み$/ }).waitFor({ timeout: TIMEOUT });
+  page.locator('translater-ui .status .label', { hasText: /^翻訳済み$/ }).waitFor({ timeout: TIMEOUT });
 const hrefsById = (page) => page.$$eval('a', (as) => as.map((a) => [a.id, a.getAttribute('href')]));
 
 try {
@@ -184,8 +184,8 @@ try {
   await page.screenshot({ path: path.join(OUT, 'page-translated.png') });
 
   await check('restore brings back the exact original page', async () => {
-    await page.locator('plamo-translator-ui .status button.restore').click();
-    await page.waitForFunction(() => document.querySelector('plamo-translator-ui').shadowRoot.querySelector('.status').hidden);
+    await page.locator('translater-ui .status button.restore').click();
+    await page.waitForFunction(() => document.querySelector('translater-ui').shadowRoot.querySelector('.status').hidden);
     const restored = await page.evaluate(() => ({ title: document.title, body: document.body.innerHTML }));
     assert.equal(restored.title, original.title);
     assert.equal(restored.body, original.body);
@@ -194,7 +194,7 @@ try {
   await check('selecting text shows the button and the card shows Japanese', async () => {
     await reference.bringToFront();
     await reference.click('#plain', { clickCount: 3 });
-    const trigger = reference.locator('plamo-translator-ui .trigger');
+    const trigger = reference.locator('translater-ui .trigger');
     await trigger.waitFor({ state: 'visible' });
     const box = await trigger.boundingBox();
     const clip = { x: Math.max(0, box.x - 160), y: Math.max(0, box.y - 60), width: 220, height: 110 };
@@ -203,11 +203,11 @@ try {
     await reference.screenshot({ path: path.join(OUT, 'selection-button-dark.png'), clip });
     await reference.emulateMedia({ colorScheme: 'light' });
     await trigger.click();
-    const body = reference.locator('plamo-translator-ui .card .body:not(.loading)');
+    const body = reference.locator('translater-ui .card .body:not(.loading)');
     await body.waitFor({ timeout: TIMEOUT });
     const text = await body.textContent();
     assert.match(text, KANA, text);
-    assert.equal(await reference.locator('plamo-translator-ui .card footer button').textContent(), 'コピー');
+    assert.equal(await reference.locator('translater-ui .card footer button').textContent(), 'コピー');
     await reference.screenshot({ path: path.join(OUT, 'selection-card.png') });
     await reference.emulateMedia({ colorScheme: 'dark' });
     await reference.screenshot({ path: path.join(OUT, 'selection-card-dark.png') });
@@ -216,7 +216,7 @@ try {
 
   await check('Escape closes the card', async () => {
     await reference.keyboard.press('Escape');
-    await reference.locator('plamo-translator-ui .card').waitFor({ state: 'hidden' });
+    await reference.locator('translater-ui .card').waitFor({ state: 'hidden' });
   });
 } finally {
   await context.close();

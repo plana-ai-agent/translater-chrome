@@ -8,7 +8,7 @@ A Manifest V3 Chrome extension. There is no build step. The sources are loaded a
 2. **Selection translation.** Selecting text shows a small translate button at the bottom right of the selection. Clicking it opens a card with the translation below the selection, the same flow as the DeepL extension. The context menu and a shortcut open it too.
 3. **Options page.** Sets the API URL, API key, model name, target language, number of concurrent requests, and whether the selection button is shown.
 
-The translation model is a PLaMo translation model served through an OpenAI-compatible API (for example llama.cpp). Other chat models are not supported.
+The translation model is Hy-MT3 served through an OpenAI-compatible API (for example vLLM). The request carries the instruction in the user message, so other chat models that follow it also work.
 
 ## Structure
 
@@ -31,13 +31,12 @@ Content scripts cannot be loaded as modules. They are listed in order in `conten
 
 Only the service worker talks to the LLM. A content script sends `chrome.runtime.sendMessage({ type: 'translate', text })` and receives `{ ok: true, text }` or `{ ok: false, error }`. This keeps requests free of the page's CSP and mixed-content restrictions.
 
-`POST {baseUrl}/chat/completions` receives `messages: [{ role: 'user', content: text }]`, `chat_template_kwargs: { target_lang }`, and `temperature: 0`, plus `model` when one is set.
+`POST {baseUrl}/chat/completions` receives `messages: [{ role: 'user', content: prompt }]` and `temperature: 0`, plus `model` when one is set. `prompt` is built by `buildPrompt` in `llm.js`: the default translation prompt from the Hy-MT3 model card (`Translate the following text into {language}. Note that you should only output the translated result without any additional explanation:`), a blank line, then the text. The language is the English name of the target language (`Japanese`, `Simplified Chinese`, and so on), as the model card asks.
 
-What the PLaMo translation model (served by llama.cpp) does:
+What Hy-MT3 (Hy-MT3-30B-A3B NVFP4 served by vLLM) does:
 
-- A leading system message is ignored. The chat template raises an error unless the messages end with a user message.
-- `target_lang` is a lowercase language code such as `ja`, `en`, or `zh-hans`.
-- Tags of the form `<g id="0">…</g>` mostly survive. With nested tags, the inner opening tag is sometimes dropped while its closing tag remains.
+- The instruction has to be in the user message. `chat_template_kwargs` such as PLaMo's `target_lang` are ignored, and without the instruction the model returns the input unchanged.
+- Tags of the form `<g id="0">…</g>` survive, nested ones included. `npm run measure-tags` gave `intact sentences 20/20, tags kept 42/42` at `temperature: 0`.
 
 ## Page translation
 
@@ -96,12 +95,12 @@ Stored in `chrome.storage.sync`.
 | --- | --- |
 | `baseUrl` | `http://localhost:8080/v1` |
 | `apiKey` | Empty. Sent as `Authorization: Bearer` when not empty |
-| `model` | Empty. When empty, `model` is not sent (llama.cpp uses the loaded model) |
+| `model` | Empty. When empty, `model` is not sent (vLLM and llama.cpp use the loaded model) |
 | `targetLang` | `ja` |
 | `concurrency` | `4` |
 | `showSelectionButton` | `true` |
 
-The options page has a button that fetches the model list (`GET {baseUrl}/models`) and a connection test button (translates a short English sentence).
+The options page has a button that fetches the model list (`GET {baseUrl}/models`) and fills the model field with the first one when it is empty, and a connection test button (translates a short English sentence).
 
 ## Verification
 
